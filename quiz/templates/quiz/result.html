@@ -1,0 +1,41 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <title>測驗結果</title>
+    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
+</head>
+<body>
+
+<div class="container" style="text-align: center; margin-top: 50px;">
+    
+    <h1>測驗結束</h1>
+    <p class="text-secondary">系統已完成即時自動閱卷</p>
+
+    <hr>
+    <h3> 答題詳情與即時回饋</h3>
+    <div class="wrong-details-container" style="margin-top: 20px; text-align: left;">
+        {% for r in wrong_details %}
+            <div class="quiz-card" style="width: 100%; margin: 15px 0; padding: 20px; border-left: 5px solid #dc3545; background: #fff5f5;">
+                <h5 style="color: #dc3545; font-weight: bold;"> 答錯題目：{{ r.question.content }}</h5>
+                <div style="margin-top: 10px; font-size: 16px;">
+                    <p> 妳的答案：<span style="color: #666; font-weight: bold;">{{ r.user_ans }}</span></p>
+                    <p> 正確答案：<span style="color: #28a745; font-weight: bold;">{{ r.correct_ans }}</span></p>
+                </div>
+            </div>
+        {% empty %}
+            <div class="quiz-card" style="width: 100%; margin: 15px 0; padding: 20px; border-left: 5px solid #28a745; background: #f3fbf6;">
+                <h5 style="color: #28a745; font-weight: bold;"> 太強了！沒有任何錯題，全對！</h5>
+            </div>
+        {% endfor %}
+    </div>
+
+    <div style="margin-top: 30px;">
+        <a href="{% url 'home' %}" class="btn" style="padding: 10px 30px; background-color: #343a40; color: white; text-decoration: none; border-radius: 5px; display: inline-block;">回到測驗首頁</a>
+    </div>
+
+</div>
+
+</body>
+</html>

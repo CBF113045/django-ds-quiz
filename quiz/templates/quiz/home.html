@@ -1,0 +1,33 @@
+{% load static %}
+
+<!DOCTYPE html>
+<html lang="zh-hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>陣列測驗網站</title>
+    
+    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
+</head>
+<body>
+
+<div class="container">
+    <h1>資料結構第4章－陣列測驗網站</h1>
+    <p>共20題選擇題測驗</p>
+
+    <form action="{% url 'start_quiz' %}" method="GET">
+    <div style="margin-bottom: 20px;">
+        <label for="num" style="font-size: 16px; margin-right: 10px;">請選擇測驗題數：</label>
+        <select name="num" id="num" style="padding: 5px 15px; font-size: 16px; border-radius: 5px;">
+            <option value="5">5 題</option>
+            <option value="10">10 題</option>
+            <option value="20">20 題（全部）</option>
+        </select>
+    </div>
+    
+    <button type="submit">開始測驗</button>
+</form>
+</div>
+
+</body>
+</html>
