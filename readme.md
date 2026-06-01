@@ -13,5 +13,5 @@
 
 1. **複製儲存庫**
    ```bash
-   git clone :<https//github.com/CBF113045/django-ds-quiz/tree/main/ds_quiz_project>
+   git clone <https://github.com/CBF113045/django-ds-quiz.git>
    cd ds_quiz_project
