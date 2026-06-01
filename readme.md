@@ -9,9 +9,38 @@
 4. **測驗題數設定**：允許學生自行選擇每次測驗題數（5 題、10 題或全部）。
 5. **間隔學習法**：系統會優先抽取學生之前答錯的題目（錯題本），重複出現以加強記憶。
 
-##  安裝與執行步驟
+#  專案安裝與執行步驟
 
-1. **複製儲存庫**
-   ```bash
+請在您的終端機（Terminal）或 VS Code 終端機中，依序執行以下步驟：
+
+### 1. 安裝必要開發套件
+在專案根目錄下執行，依據 requirements.txt 安裝 Django 及相關相依套件：
+pip install -r requirements.txt
+
+### 2. 切換至 Django 專案目錄
+切換至含有 manage.py 的實體專案資料夾：
+cd ds_quiz_project
+
+### 3. 執行資料庫遷移（Migration）
+同步 SQLite 資料庫結構，確保題庫與資料表完整：
+python manage.py migrate
+
+### 4. 啟動 Django 開發伺服器
+執行以下指令啟動在地端伺服器：
+python manage.py runserver
+
+---
+
+## 如何開啟網站
+
+當終端機顯示 Starting development server at http://127.0.0.1:8000/ 後：
+
+1. 打開瀏覽器（建議使用 Chrome 或 Edge）。
+2. 在網址列輸入：http://127.0.0.1:8000/ 
+3. 按下 Enter 即可進入「資料結構隨機測驗網站」首頁。
+
+ 小提示：如需停止伺服器運作，請在終端機視窗中按下鍵盤的 Ctrl + C 即可關閉。
+
+1. #複製儲存庫#
    git clone <https://github.com/CBF113045/django-ds-quiz.git>
    cd ds_quiz_project
