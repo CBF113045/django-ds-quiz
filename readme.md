@@ -18,6 +18,7 @@ Markdown
 如果使用 Git 下載，請先在終端機輸入以下指令複製儲存庫，並進入專案資料夾：
 
 輸入指令: git clone https://github.com/CBF113045/django-ds-quiz.git
+
 進入專案資料夾 : cd django-ds-quiz
 ( 提示：如果是從網頁下載 ZIP 檔，請解壓縮後直接用 VS Code 的「開啟資料夾」打開該目錄即可。)
 
@@ -25,6 +26,7 @@ Markdown
 
 1. 安裝必要開發套件
 在專案根目錄下執行，依據 requirements.txt 安裝 Django 及相關相依套件：
+
 pip install -r requirements.txt
 
 2. 執行資料庫遷移（Migration）
