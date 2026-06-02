@@ -15,7 +15,7 @@ Markdown
 
 ## 🚀 專案安裝與執行步驟
 
-如果使用 Git 下載，請先在終端機輸入以下指令複製儲存庫，並進入專案資料夾：
+如果使用 Git指令下載，請先在終端機輸入以下指令複製儲存庫，並進入專案資料夾：
 
 輸入指令: git clone https://github.com/CBF113045/django-ds-quiz.git
 
