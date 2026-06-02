@@ -20,6 +20,7 @@ Markdown
 輸入指令: git clone https://github.com/CBF113045/django-ds-quiz.git
 
 進入專案資料夾 : cd django-ds-quiz
+
 ( 提示：如果是從網頁下載 ZIP 檔，請解壓縮後直接用 VS Code 的「開啟資料夾」打開該目錄即可。)
 
 請在 VS Code 終端機中，依序執行以下步驟：
