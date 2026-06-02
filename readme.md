@@ -43,4 +43,3 @@ python manage.py runserver
 
 1. #複製儲存庫#
    git clone <https://github.com/CBF113045/django-ds-quiz.git>
-   cd ds_quiz_project
