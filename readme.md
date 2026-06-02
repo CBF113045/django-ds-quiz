@@ -17,11 +17,11 @@
 在專案根目錄下執行，依據 requirements.txt 安裝 Django 及相關相依套件：
 pip install -r requirements.txt
 
-### 3. 執行資料庫遷移（Migration）
+### 2. 執行資料庫遷移（Migration）
 同步 SQLite 資料庫結構，確保題庫與資料表完整：
 python manage.py migrate
 
-### 4. 啟動 Django 開發伺服器
+### 3. 啟動 Django 開發伺服器
 執行以下指令啟動在地端伺服器：
 python manage.py runserver
 
