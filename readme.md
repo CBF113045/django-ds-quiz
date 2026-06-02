@@ -17,10 +17,6 @@
 在專案根目錄下執行，依據 requirements.txt 安裝 Django 及相關相依套件：
 pip install -r requirements.txt
 
-### 2. 切換至 Django 專案目錄
-切換至含有 manage.py 的實體專案資料夾：
-cd ds_quiz_project
-
 ### 3. 執行資料庫遷移（Migration）
 同步 SQLite 資料庫結構，確保題庫與資料表完整：
 python manage.py migrate
@@ -43,3 +39,4 @@ python manage.py runserver
 
 1. #複製儲存庫#
    git clone <https://github.com/CBF113045/django-ds-quiz.git>
+   cd django-ds-quiz
