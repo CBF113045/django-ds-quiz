@@ -23,6 +23,9 @@ body{
     margin:15px 0;
     text-align:left;
 }
+.option:hover{
+    background:#f2f2f2;
+}
 
 button{
     background:#007bff;
@@ -31,4 +34,7 @@ button{
     padding:12px 25px;
     border-radius:8px;
     cursor:pointer;
+}
+button:hover{
+    transform: scale(1.05);
 }
