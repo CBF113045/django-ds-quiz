@@ -27,6 +27,27 @@ body{
     background:#f2f2f2;
 }
 
+.option-card{
+    display:block;
+    text-align:left;
+    padding:15px;
+    margin:12px 0;
+    border:2px solid #ddd;
+    border-radius:12px;
+    cursor:pointer;
+    transition:0.3s;
+    background:white;
+}
+
+.option-card:hover{
+    background:#eef5ff;
+    border-color:#007bff;
+}
+
+.option-card input{
+    margin-right:10px;
+}
+
 button{
     background:#007bff;
     color:white;
