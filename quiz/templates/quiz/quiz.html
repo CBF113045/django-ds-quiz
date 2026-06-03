@@ -15,16 +15,20 @@
     <div class="quiz-card" style="margin-bottom: 30px;">
         
         <h2>第 {{ forloop.counter }} 題</h2>
-
+        
         <p class="question">
             {{ q.content }}
         </p>
 
         {% for key, value in q.shuffled_options %}
-        <div class="option">
-            <input type="radio" name="question_{{ q.id }}" value="{{ key }}" required>
-            {{ key }}. {{ value }}
-        </div>
+        <label class="option-card">
+            <input type="radio"
+                   name="question_{{ q.id }}"
+                   value="{{ key }}"
+                   required>
+
+            <span>{{ key }}. {{ value }}</span>
+</label>
         {% endfor %}
 
     </div>
