@@ -8,6 +8,11 @@
 </head>
 <body>
 
+<div class="timer-box">
+    ⏰ 剩餘時間：
+    <span id="time">60</span> 秒
+</div>
+
 <form action="{% url 'submit_quiz' %}" method="POST">
     {% csrf_token %} 
     
@@ -43,8 +48,41 @@
         <button type="submit" style="padding: 10px 30px; font-size: 18px; cursor: pointer;">送出答案</button>
     </div>
     {% endif %}
-
+    
 </form>
+
+<script>
+
+let questionCount = Number("{{ question_count }}");
+
+// 每題 12 秒
+let timeLeft = questionCount * 12;
+
+document.getElementById("time").innerText = timeLeft;
+
+const timer = setInterval(() => {
+
+    timeLeft--;
+
+    document.getElementById("time").innerText = timeLeft;
+
+    if(timeLeft <= 10){
+        document.querySelector(".timer-box")
+            .style.background = "#dc3545";
+    }
+
+    if(timeLeft <= 0){
+
+        clearInterval(timer);
+
+        alert("時間到！系統將自動交卷");
+
+        document.querySelector("form").submit();
+    }
+
+},1000);
+
+</script>
 
 </body>
 </html>
