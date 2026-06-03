@@ -64,7 +64,10 @@ def start_quiz(request):
     # 暫存到 Session
     request.session['quiz_question_ids'] = [q.id for q in chosen_questions]
     
-    return render(request, 'quiz/quiz.html', {'quiz_data': chosen_questions})
+    return render(request, 'quiz/quiz.html', {
+    'quiz_data': chosen_questions,
+    'question_count': num_questions
+    })
 
 # 交卷計算分數與儲存錯題（純文字內文對齊版－大魔王終結者）
 def submit_quiz(request):
