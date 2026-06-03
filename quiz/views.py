@@ -66,7 +66,7 @@ def start_quiz(request):
     
     return render(request, 'quiz/quiz.html', {'quiz_data': chosen_questions})
 
-# 交卷計算分數與儲存錯題
+# 交卷計算分數與儲存錯題（純文字內文對齊版－大魔王終結者）
 def submit_quiz(request):
     if request.method == 'POST':
         question_ids = request.session.get('quiz_question_ids', [])
@@ -77,23 +77,33 @@ def submit_quiz(request):
         for q_id in question_ids:
             try:
                 question = Question.objects.get(id=q_id)
-                user_ans = request.POST.get(f'question_{q_id}') # 抓取前端學生選的答案
+                # 這時候 user_ans 拿到的直接是學生選的「選項純文字內容」了！
+                user_ans = request.POST.get(f'question_{q_id}') 
                 
-                if user_ans == question.correct_answer:
+                if not user_ans:
+                    user_ans = '未答'
+
+                # 找出資料庫中，這題真正的正確答案字母（例如 'A'）原本對應的「純文字內容」
+                correct_letter_in_db = question.correct_answer.lower()
+                actual_correct_text = getattr(question, f'option_{correct_letter_in_db}', None)
+                
+                # 終極對決：直接比對兩串中文字！
+                if user_ans == actual_correct_text:
                     score += 1
                 else:
-                    # 答錯了！存入錯題本資料庫（如果學生已登入的話）
+                    # 答錯了！存入錯題本資料庫
                     if request.user.is_authenticated:
                         WrongQuestion.objects.get_or_create(
                             user=request.user,
                             question=question,
-                            defaults={'user_answer': user_ans or '無'}
+                            defaults={'user_answer': user_ans}
                         )
                     wrong_details.append({
                         'question': question,
-                        'user_ans': user_ans or '未答',
-                        'correct_ans': question.correct_answer
+                        'user_ans': user_ans,
+                        'correct_ans': actual_correct_text
                     })
+                    
             except Question.DoesNotExist:
                 continue
         
