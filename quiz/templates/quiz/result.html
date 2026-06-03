@@ -3,7 +3,7 @@
 <html lang="zh-Hant">
 <head>
     <meta charset="UTF-8">
-    <title>測驗結果</title>
+    <title>作答結果</title>
     <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
 </head>
 <body>
@@ -11,6 +11,12 @@
 <div class="container" style="text-align: center; margin-top: 50px;">
     
     <h1>測驗結束</h1>
+    <h2>測驗成績</h2>
+
+    <h1>
+       {{ correct_count }} / {{ total }}
+    </h1>
+    
     <p class="text-secondary">系統已完成即時自動閱卷</p>
 
     <hr>
