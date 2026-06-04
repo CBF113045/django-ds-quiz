@@ -10,7 +10,7 @@
 
 <div class="timer-box">
     ⏰ 剩餘時間：
-    <span id="time">60</span> 秒
+    <span id="time">60</span> 分
 </div>
 
 <form action="{% url 'submit_quiz' %}" method="POST">
@@ -56,21 +56,38 @@
 let questionCount = Number("{{ question_count }}");
 
 // 每題 12 秒
-let timeLeft = questionCount * 12;
+let timeLeft = questionCount * 30;
 
-document.getElementById("time").innerText = timeLeft;
+// 更新時間顯示（分:秒）
+function updateTimerDisplay(){
+
+    let minutes = Math.floor(timeLeft / 60);
+    let seconds = timeLeft % 60;
+
+    // 補零：例如 3:5 → 03:05
+    minutes = String(minutes).padStart(2,'0');
+    seconds = String(seconds).padStart(2,'0');
+
+    document.getElementById("time").innerText =
+        `${minutes}:${seconds}`;
+}
+
+// 一開始先顯示
+updateTimerDisplay();
 
 const timer = setInterval(() => {
 
     timeLeft--;
 
-    document.getElementById("time").innerText = timeLeft;
+    updateTimerDisplay();
 
+    // 剩10秒變紅
     if(timeLeft <= 10){
         document.querySelector(".timer-box")
             .style.background = "#dc3545";
     }
 
+    // 時間到
     if(timeLeft <= 0){
 
         clearInterval(timer);
