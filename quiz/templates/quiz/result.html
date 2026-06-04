@@ -7,58 +7,64 @@
     <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
 
     <style>
-        body{
+        body {
             background: white;
-            color:white;
+            color: white;
         }
 
-        .result-box{
-            max-width:600px;
-            margin:80px auto;
-            background:white;
-            color:#333;
-            padding:40px;
-            border-radius:20px;
-            text-align:center;
-            box-shadow:0 10px 30px rgba(0,0,0,0.3);
+        .result-box {
+            max-width: 600px;
+            margin: 80px auto;
+            background: white;
+            color: #333;
+            padding: 40px;
+            border-radius: 20px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
         }
 
-        .score{
-            font-size:60px;
-            font-weight:bold;
-            color:#2575fc;
+        .score {
+            font-size: 60px;
+            font-weight: bold;
+            color: #2575fc;
         }
 
-        .rate{
-            font-size:24px;
-            margin-top:10px;
+        .rate {
+            font-size: 24px;
+            margin-top: 10px;
         }
 
-        .wrong-box{
-            text-align:left;
-            margin-top:30px;
+        .wrong-box {
+            text-align: left;
+            margin-top: 30px;
         }
 
-        .wrong-item{
-            background:#fff5f5;
-            padding:15px;
-            border-left:5px solid #dc3545;
-            margin-bottom:10px;
-            border-radius:8px;
+        .wrong-item {
+            background: #fff5f5;
+            padding: 15px;
+            border-left: 5px solid #dc3545;
+            margin-bottom: 10px;
+            border-radius: 8px;
         }
 
-        .btn{
-            display:inline-block;
-            margin-top:20px;
-            padding:12px 25px;
-            background:#2575fc;
-            color:white;
-            text-decoration:none;
-            border-radius:10px;
+        /* 為了配合妳的要求，將題目文字特別設為純黑色 */
+        .wrong-title {
+            color: #000000;
+            font-weight: bold;
         }
 
-        .btn:hover{
-            opacity:0.9;
+        .btn {
+            display: inline-block;
+            margin-top: 20px;
+            padding: 12px 25px;
+            background: #2575fc;
+            color: white;
+            text-decoration: none;
+            border-radius: 10px;
+        }
+
+        .btn:hover {
+            opacity: 0.9;
         }
     </style>
 </head>
@@ -84,13 +90,15 @@
 
     <div class="wrong-box">
 
-        <h3>錯題回顧</h3>
+        <h3>❌ 錯題回顧</h3>
 
         {% for r in wrong_details %}
             <div class="wrong-item">
-                <b>題目：</b>{{ r.question.content }}<br>
-                <b>你的答案：</b>{{ r.user_ans }}<br>
-                <b>正確答案：</b>{{ r.correct_ans }}
+                <b class="wrong-title">題目：</b><span class="wrong-title">{{ r.question.content }}</span><br>
+                
+                <b>你的答案：</b><span style="color: #dc3545; font-weight: bold;">{{ r.user_ans }}</span><br>
+                
+                <b>正確答案：</b><span style="color: #28a745; font-weight: bold;">{{ r.correct_ans }}</span>
             </div>
         {% empty %}
             <p>🎉 全部答對！太強了！</p>
@@ -98,9 +106,7 @@
 
     </div>
 
-    <a class="btn" href="{% url 'home' %}">
-        重新測驗
-    </a>
+    <a href="/">返回首頁</a>
 
 </div>
 
