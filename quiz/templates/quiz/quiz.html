@@ -9,8 +9,7 @@
 <body>
 
 <div class="timer-box">
-    ⏰ 剩餘時間：
-    <span id="time">60</span> 分
+    ⏰ 剩餘時間：<span id="time">00:00</span>
 </div>
 
 <form action="{% url 'submit_quiz' %}" method="POST">
@@ -33,7 +32,7 @@
                    required>
 
             <span>{{ key }}. {{ value }}</span>
-</label>
+        </label>
         {% endfor %}
 
     </div>
@@ -52,27 +51,30 @@
 </form>
 
 <script>
+// 🎯【超強防錯升級】直接請 Django 自動計算 quiz_data 的題目數量，再也不怕後端沒給變數！
+let questionCount = Number("{{ quiz_data|length }}");
 
-let questionCount = Number("{{ question_count }}");
+// 如果真的完全沒題目，預設給 1 題的時間避免變 0 秒
+if (questionCount === 0) {
+    questionCount = 1;
+}
 
-// 每題 12 秒
+// 每題 30 秒（倒數總時間）
 let timeLeft = questionCount * 30;
 
 // 更新時間顯示（分:秒）
 function updateTimerDisplay(){
-
     let minutes = Math.floor(timeLeft / 60);
     let seconds = timeLeft % 60;
 
     // 補零：例如 3:5 → 03:05
-    minutes = String(minutes).padStart(2,'0');
-    seconds = String(seconds).padStart(2,'0');
+    minutes = String(minutes).padStart(2, '0');
+    seconds = String(seconds).padStart(2, '0');
 
-    document.getElementById("time").innerText =
-        `${minutes}:${seconds}`;
+    document.getElementById("time").innerText = `${minutes}:${seconds}`;
 }
 
-// 一開始先顯示
+// 🎯【核心關鍵】一進入網頁就「立刻」執行更新顯示，把 00:00 瞬間洗掉！
 updateTimerDisplay();
 
 const timer = setInterval(() => {
@@ -81,7 +83,7 @@ const timer = setInterval(() => {
 
     updateTimerDisplay();
 
-    // 剩10秒變紅
+    // 剩 10 秒變紅
     if(timeLeft <= 10){
         document.querySelector(".timer-box")
             .style.background = "#dc3545";
@@ -89,17 +91,12 @@ const timer = setInterval(() => {
 
     // 時間到
     if(timeLeft <= 0){
-
         clearInterval(timer);
-
         alert("時間到！系統將自動交卷");
-
         document.querySelector("form").submit();
     }
 
-},1000);
-
+}, 1000);
 </script>
-
 </body>
 </html>
