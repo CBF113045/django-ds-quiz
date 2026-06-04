@@ -1,6 +1,9 @@
+from django.contrib import auth
+from django.conf import settings
 from django.shortcuts import render, redirect
 from .models import Question, WrongQuestion
 import random
+import django.contrib.auth as auth  # 🎯【核心修正】改用這個，絕對 100% 抓得到登出工具！
 
 # 首頁
 def home(request):
@@ -69,7 +72,11 @@ def start_quiz(request):
     'question_count': num_questions
     })
 
-# 交卷計算分數與儲存錯題（純文字內文對齊版－大魔王終結者）
+from django.shortcuts import render
+from django.utils import timezone
+from .models import Question, WrongQuestion
+
+# 交卷計算分數與儲存錯題
 def submit_quiz(request):
     if request.method == 'POST':
         question_ids = request.session.get('quiz_question_ids', [])
@@ -80,36 +87,67 @@ def submit_quiz(request):
         for q_id in question_ids:
             try:
                 question = Question.objects.get(id=q_id)
-                # 這時候 user_ans 拿到的直接是學生選的「選項純文字內容」了！
-                user_ans = request.POST.get(f'question_{q_id}') 
                 
-                if not user_ans:
-                    user_ans = '未答'
+                # 1. 抓取前端傳來的「純文字回答」
+                input_name = f"question_{question.id}"
+                user_ans_text = request.POST.get(input_name)
+                
+                if not user_ans_text:
+                    user_ans_text = '未答'
 
-                # 找出資料庫中，這題真正的正確答案字母（例如 'A'）原本對應的「純文字內容」
-                correct_letter_in_db = question.correct_answer.lower()
-                actual_correct_text = getattr(question, f'option_{correct_letter_in_db}', None)
+                # 2. 找出這題正確答案的字母（例如 'A'）與對應的「純文字內容」
+                correct_letter = question.correct_answer.upper() # 確保是大寫 A, B, C...
+                actual_correct_text = getattr(question, f'option_{correct_letter.lower()}', None)
                 
-                # 終極對決：直接比對兩串中文字！
-                if user_ans == actual_correct_text:
+                # 🎯【全新進化】逆向找出學生剛剛選的「純文字」到底對應哪一個英文字母
+                user_letter = "未答"
+                for letter in ['A', 'B', 'C', 'D', 'E']:
+                    opt_text = getattr(question, f'option_{letter.lower()}', None)
+                    if opt_text == user_ans_text:
+                        user_letter = letter
+                        break
+
+                # 3. 完美組合出妳想要的「(字母) 完整文字」格式
+                if user_letter != "未答":
+                    final_user_display = f"({user_letter}) {user_ans_text}"
+                else:
+                    final_user_display = "未答"
+
+                final_correct_display = f"({correct_letter}) {actual_correct_text}"
+
+                # 4. 終極對決與計分
+                if user_ans_text == actual_correct_text:
                     score += 1
                 else:
-                    # 答錯了！存入錯題本資料庫
+                    # 答錯了！存入或更新錯題本資料庫
                     if request.user.is_authenticated:
-                        WrongQuestion.objects.get_or_create(
+                        WrongQuestion.objects.update_or_create(
                             user=request.user,
                             question=question,
-                            defaults={'user_answer': user_ans}
+                            defaults={
+                                # 🎯 這裡直接存入極度漂亮的格式，如：(C) 求多項式的根
+                                'user_answer': final_user_display, 
+                                'created_at': timezone.now()
+                            }
                         )
+                    
+                    # 給當下成績單 result.html 用的資料
                     wrong_details.append({
                         'question': question,
-                        'user_ans': user_ans,
-                        'correct_ans': actual_correct_text
+                        'user_ans': final_user_display,       # 帶有括號的漂亮格式
+                        'correct_ans': final_correct_display,   # 帶有括號的漂亮格式
                     })
                     
             except Question.DoesNotExist:
                 continue
-        
+
+        context = {
+            'correct_count': score,
+            'total': total,
+            'wrong_details': wrong_details,
+        }
+        return render(request, 'quiz/result.html', context)
+    
         # 計算百分制分數
         final_score = int((score / total) * 100) if total > 0 else 0
         
@@ -139,3 +177,36 @@ def review_wrong_questions(request):
     request.session['quiz_question_ids'] = [q.id for q in chosen_questions]
     
     return render(request, 'quiz/quiz.html', {'quiz_data': chosen_questions, 'is_review': True})
+
+from django.shortcuts import render, redirect
+from django.contrib.auth.forms import UserCreationForm # Django 內建的註冊表單
+from django.contrib.auth.decorators import login_required
+from .models import WrongQuestion, Question
+
+# ① 註冊帳號邏輯
+def register_view(request):
+    if request.method == 'POST':
+        form = UserCreationForm(request.POST)
+        if form.is_valid():
+            form.save() # 自動幫密碼加密並存入資料庫
+           
+            return redirect('/login/') # 註冊成功後跳轉到登入頁
+    else:
+        form = UserCreationForm()
+    return render(request, 'quiz/register.html', {'form': form})
+
+# ② 錯題本檢視邏輯（限定必須登入才能看）
+@login_required
+def wrong_questions_view(request):
+    # 只撈出目前登入的這個學生的錯題紀錄
+    user_wrong = WrongQuestion.objects.filter(user=request.user).select_related('question')
+    return render(request, 'quiz/wrong_questions.html', {'user_wrong': user_wrong})
+
+# 🎯 請將 quiz/views.py 最底下的 logout_view 精準修改成這樣：
+def logout_view(request):
+    if request.method == 'POST':
+        auth.logout(request)
+        # 🎯 改用這行：直接交給 settings.py 設定好的全域路由，最安全！
+        return redirect(settings.LOGOUT_REDIRECT_URL) 
+        
+    return redirect('/')
