@@ -84,26 +84,13 @@ DATABASES = {
 # Password validation
 # https://docs.djangoproject.com/en/6.0/ref/settings/#auth-password-validators
 
-AUTH_PASSWORD_VALIDATORS = [
-    {
-        'NAME': 'django.contrib.auth.password_validation.UserAttributeSimilarityValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.MinimumLengthValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.CommonPasswordValidator',
-    },
-    {
-        'NAME': 'django.contrib.auth.password_validation.NumericPasswordValidator',
-    },
-]
+AUTH_PASSWORD_VALIDATORS = []
 
 
 # Internationalization
 # https://docs.djangoproject.com/en/6.0/topics/i18n/
 
-LANGUAGE_CODE = 'en-us'
+LANGUAGE_CODE = 'zh-hant'
 
 TIME_ZONE = 'UTC'
 
@@ -116,3 +103,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
+# ==============================================================================
+# 🎯 終極登入/登出轉址設定
+# ==============================================================================
+
+# 告訴 Django：只要使用者成功登出，不需要問，直接強制重新導向到首頁（'/'）
+LOGOUT_REDIRECT_URL = '/'
+
+# （選填備用）未來如果有做登入頁面，成功登入後也直接去首頁
+LOGIN_REDIRECT_URL = '/'
