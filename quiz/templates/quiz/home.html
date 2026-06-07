@@ -1,79 +1,68 @@
+{% extends "base.html" %}
 {% load static %}
 
-<!DOCTYPE html>
-<html lang="zh-hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>陣列測驗網站</title>
-    
-    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
-</head>
-<body>
+{% block content %}
 
- <div style="background-color: #f8f9fa; padding: 15px; border-bottom: 1px solid #dee2e6; margin-bottom: 20px;">
-    {% if request.user.is_authenticated %}
-        <span> 您好，<strong>{{ request.user.username }}</strong> 同學！</span>
-      
-        <a href="{% url 'wrong_questions' %}" style="margin-left: 15px; color: #007bff; text-decoration: none; font-weight: bold;">📖 查看我的錯題本</a>
-      <button type="button" onclick="logoutSmarter()" style="
-    background: none;
-    border: none;
-    color: #dc3545;
-    font-size: 16px;
-    font-weight: bold;
-    cursor: pointer;
-    padding: 0;
-    font-family: inherit;
-    margin-left: 15px;
-">
-    登出系統
-</button>
-
-<script>
-function logoutSmarter() {
-    // 建立一個完全獨立的、乾淨的虛擬表單
-    const form = document.createElement('form');
-    form.method = 'POST';
-    form.action = "{% url 'logout' %}";
-    
-    // 塞入 Django 必備的防偽標記
-    const csrfInput = document.createElement('input');
-    csrfInput.type = 'hidden';
-    csrfInput.name = 'csrfmiddlewaretoken';
-    csrfInput.value = '{{ csrf_token }}';
-    
-    form.appendChild(csrfInput);
-    document.body.appendChild(form);
-    
-    // 強制送出！這會強迫瀏覽器開一條最乾淨的通路給 Django，絕對不會卡快取或噴 405
-    form.submit();
-}
-</script>
-    {% else %}
-        <span>📢 您目前是以【訪客身份】瀏覽，寫錯題目不會記錄喔！</span>
-        <a href="{% url 'login' %}" style="margin-left: 15px; color: #28a745; text-decoration: none; font-weight: bold;">🔐 點我登入</a>
-        <a href="{% url 'register' %}" style="margin-left: 15px; color: #17a2b8; text-decoration: none;">📝 註冊新帳號</a>
-    {% endif %}
-</div>
-    
 <div class="container">
-    <h1>資料結構第4章－陣列測驗網站</h1>
-    <p>共20題選擇題測驗</p>
 
-    <form action="{% url 'start_quiz' %}" method="GET">
-    <div style="margin-bottom: 20px;">
-        <label for="num" style="font-size: 16px; margin-right: 10px;">請選擇測驗題數：</label>
-        <select name="num" id="num" style="padding: 5px 15px; font-size: 16px; border-radius: 5px;">
-            <option value="5">5 題</option>
-            <option value="10">10 題</option>
-            <option value="20">20 題（全部）</option>
-        </select>
+    <div class="card">
+        <h1>📚 資料結構第4章－陣列測驗網站</h1>
+        <p>共 20 題選擇題測驗</p>
     </div>
-    
-    <button type="submit">開始測驗</button>
-</form>
+
+    <!-- 使用者狀態 -->
+    <div class="card">
+
+        {% if request.user.is_authenticated %}
+        <p>👋 您好，<strong>{{ request.user.username }}</strong></p>
+
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+            <a class="btn" href="{% url 'wrong_questions' %}">
+                📖 錯題本
+            </a>
+
+            <a class="btn secondary" href="{% url 'review_wrong_questions' %}">
+                🧠 錯題複習
+            </a>
+            
+        </div>
+
+        {% else %}
+        <p>📢 您目前是以【訪客身份】瀏覽，寫錯題目不會記錄喔！</p>
+
+        <div style="display:flex; gap:20px; flex-wrap:wrap;">
+
+            <a class="btn" href="{% url 'login' %}">登入</a>
+            <a class="btn secondary" href="{% url 'register' %}">註冊</a>
+                    
+        </div>
+        
+        {% endif %}
+
+    </div>
+
+    <!-- 測驗開始 -->
+    <div class="card">
+
+        <form action="{% url 'start_quiz' %}" method="GET">
+
+            <label>選擇題數</label>
+
+            <select name="num">
+                <option value="5">5 題</option>
+                <option value="10">10 題</option>
+                <option value="20">20 題</option>
+            </select>
+
+            <button class="btn primary" type="submit">
+                🚀 開始測驗
+            </button>
+
+        </form>
+
+    </div>
+
 </div>
 
-</body>
-</html>
+{% endblock %}
