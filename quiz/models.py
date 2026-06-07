@@ -22,32 +22,38 @@ class Question(models.Model):
 
 # 2. 錯題本資料庫（進階加分項）
 class WrongQuestion(models.Model):
-    user = models.ForeignKey(
-        User,
-        on_delete=models.CASCADE,
-        verbose_name="學生"
-    )
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    question = models.ForeignKey(Question, on_delete=models.CASCADE)
 
-    question = models.ForeignKey(
-        Question,
-        on_delete=models.CASCADE,
-        verbose_name="錯題內容"
-    )
+    user_answer = models.CharField(max_length=255, null=True, blank=True)
 
-    user_answer = models.CharField(
-        max_length=255,
-        null=True,
-        blank=True,
-        verbose_name="學生的錯誤答案"
-    )
+    created_at = models.DateTimeField(auto_now_add=True)
 
-    created_at = models.DateTimeField(
-        auto_now_add=True,
-        verbose_name="記錄時間"
-    )
+    # 🧠 AI 記憶核心欄位（新增）
+    wrong_count = models.IntegerField(default=1)   # 錯幾次
+    correct_count = models.IntegerField(default=0) # 答對幾次
+
+    memory_level = models.IntegerField(default=0)   
+    # 0 = 新錯題
+    # 1 = 已複習過
+    # 2 = 熟練
+    # 3 = 幾乎記住
+
+    next_review = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         unique_together = ('user', 'question')
 
     def __str__(self):
         return f"{self.user.username} - {self.question.content[:20]}"
+
+class QuizRecord(models.Model):
+    user = models.ForeignKey(User, on_delete=models.CASCADE)
+    score = models.IntegerField()
+    total = models.IntegerField()
+    correct = models.IntegerField()
+
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f"{self.user.username} - {self.score}"
