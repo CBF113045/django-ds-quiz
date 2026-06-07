@@ -21,4 +21,5 @@ urlpatterns = [
     path('wrong-questions/', views.wrong_questions_view, name='wrong_questions'),
     path('review-wrong/', views.review_wrong_questions, name='review_wrong_questions'),
     path('history/', views.history_view, name='history'),
+    path('leaderboard/', views.leaderboard_view, name='leaderboard'),
 ]
