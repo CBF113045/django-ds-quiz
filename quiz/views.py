@@ -2,6 +2,7 @@ from django.contrib import auth
 from django.conf import settings
 from django.shortcuts import render, redirect
 from .models import Question, WrongQuestion
+from .models import QuizRecord
 import random
 import django.contrib.auth as auth  # 🎯【核心修正】改用這個，絕對 100% 抓得到登出工具！
 
@@ -34,42 +35,72 @@ def prepare_shuffled_options(chosen_questions):
         q.shuffled_options = shuffled_result
 # 開始測驗（隨機抽題邏輯）
 def start_quiz(request):
-    num_questions = int(request.GET.get('num', 5)) # 接收前端選的 5 或 10 題
-    
-    all_questions = list(Question.objects.all())
-    chosen_questions = []
+    num_questions = int(request.GET.get('num', 5))
 
-    # 💡 實現間隔學習法：如果學生有登入，先撈出他寫錯過的題目
+    all_questions = list(Question.objects.all())
+
+    chosen_questions = []
+    wrong_questions = []
+    weighted_wrong = []
+
+    # =========================
+    # 🧠 1. 錯題邏輯（先算）
+    # =========================
     if request.user.is_authenticated:
         wrong_records = WrongQuestion.objects.filter(user=request.user)
-        wrong_questions = [wq.question for wq in wrong_records]
-        
-        # 如果有錯題，優先放進考卷裡（最多不超過學生選的總題數）
-        if wrong_questions:
-            # 隨機挑選錯題混入
-            chosen_questions = random.sample(wrong_questions, min(len(wrong_questions), num_questions))
 
-    # 💡 如果錯題不夠（或是沒登入），再從總題庫拿新題目來補滿
+        for wq in wrong_records:
+            weight = 1
+
+            if wq.memory_level == 0:
+                weight = 5
+            elif wq.memory_level == 1:
+                weight = 3
+            elif wq.memory_level == 2:
+                weight = 2
+
+            weighted_wrong.extend([wq.question] * weight)
+
+        if weighted_wrong:
+            wrong_questions = list(set(random.sample(
+                weighted_wrong,
+                min(len(weighted_wrong), num_questions // 2)
+            )))
+
+    # =========================
+    # 🧠 2. 先放錯題
+    # =========================
+    chosen_questions.extend(wrong_questions)
+
+    # =========================
+    # 🧠 3. 再補一般題
+    # =========================
     remaining_slots = num_questions - len(chosen_questions)
-    if remaining_slots > 0:
-        # 排除已經被選中的錯題，避免重複出現
-        pool = [q for q in all_questions if q not in chosen_questions]
-        if pool:
-            new_picks = random.sample(pool, min(len(pool), remaining_slots))
-            chosen_questions.extend(new_picks)
 
-    # 💥 最後把整份考卷的題目順序再次打亂
+    pool = [q for q in all_questions if q not in chosen_questions]
+
+    if remaining_slots > 0 and pool:
+        new_picks = random.sample(pool, min(len(pool), remaining_slots))
+        chosen_questions.extend(new_picks)
+
+    # =========================
+    # 🧠 4. 打亂順序
+    # =========================
     random.shuffle(chosen_questions)
 
-    # 呼叫我們上一輪寫好的「只洗牌選項、不洗牌字母」的小工具
+    # =========================
+    # 🎯 5. 隨機選項
+    # =========================
     prepare_shuffled_options(chosen_questions)
 
-    # 暫存到 Session
+    # =========================
+    # 💾 6. 存 session
+    # =========================
     request.session['quiz_question_ids'] = [q.id for q in chosen_questions]
-    
+
     return render(request, 'quiz/quiz.html', {
-    'quiz_data': chosen_questions,
-    'question_count': num_questions
+        'quiz_data': chosen_questions,
+        'question_count': num_questions
     })
 
 from django.shortcuts import render
@@ -118,18 +149,76 @@ def submit_quiz(request):
                 # 4. 終極對決與計分
                 if user_ans_text == actual_correct_text:
                     score += 1
+
+                 # ⭐ 如果以前曾錯過這題
+                    if request.user.is_authenticated:
+                        try:
+                            wrong_obj = WrongQuestion.objects.get(
+                                user=request.user,
+                                question=question
+                            )
+
+                            wrong_obj.correct_count += 1
+
+                            # 提升熟練度
+                            if wrong_obj.correct_count >= 2:
+                                wrong_obj.memory_level = min(
+                                    wrong_obj.memory_level + 1,
+                                    3
+                                )
+                                wrong_obj.correct_count = 0
+
+                            wrong_obj.save()
+
+                        except WrongQuestion.DoesNotExist:
+                            pass
+                
                 else:
                     # 答錯了！存入或更新錯題本資料庫
-                    if request.user.is_authenticated:
-                        WrongQuestion.objects.update_or_create(
-                            user=request.user,
-                            question=question,
-                            defaults={
-                                # 🎯 這裡直接存入極度漂亮的格式，如：(C) 求多項式的根
-                                'user_answer': final_user_display, 
-                                'created_at': timezone.now()
-                            }
-                        )
+                    from django.utils import timezone
+                    from datetime import timedelta
+
+                    wrong_obj, created = WrongQuestion.objects.get_or_create(
+                        user=request.user,
+                        question=question,
+                        defaults={
+                            'user_answer': final_user_display,
+                        }
+                    )
+
+                    # 🧠 如果第一次錯
+                    if created:
+                        wrong_obj.wrong_count = 1
+                        wrong_obj.memory_level = 0
+
+                    else:
+                        wrong_obj.wrong_count += 1
+
+                    # 🎯 記憶演算法（核心）
+                    if user_ans_text == actual_correct_text:
+                        wrong_obj.correct_count += 1
+
+                        # 答對 → 提升記憶等級
+                        if wrong_obj.correct_count >= 3:
+                            wrong_obj.memory_level = min(wrong_obj.memory_level + 1, 3)
+
+                    else:
+                        wrong_obj.memory_level = 0  # 答錯重置
+
+                    # ⏳ 間隔學習核心（重點加分）
+                    if wrong_obj.memory_level == 0:
+                        delay_days = 0
+                    elif wrong_obj.memory_level == 1:
+                        delay_days = 1
+                    elif wrong_obj.memory_level == 2:
+                        delay_days = 3
+                    else:
+                        delay_days = 7
+
+                    wrong_obj.next_review = timezone.now() + timedelta(days=delay_days)
+
+                    wrong_obj.user_answer = final_user_display
+                    wrong_obj.save()
                     
                     # 給當下成績單 result.html 用的資料
                     wrong_details.append({
@@ -141,42 +230,54 @@ def submit_quiz(request):
             except Question.DoesNotExist:
                 continue
 
-        context = {
-            'correct_count': score,
-            'total': total,
-            'wrong_details': wrong_details,
-        }
-        return render(request, 'quiz/result.html', context)
-    
         # 計算百分制分數
         final_score = int((score / total) * 100) if total > 0 else 0
-        
         context = {
             'score': final_score,
             'total': total,
             'correct_count': score,
             'wrong_details': wrong_details
         }
-        return render(request, 'quiz/result.html', context)
+        from .models import QuizRecord
+        if request.user.is_authenticated:
+          QuizRecord.objects.create(
+            user=request.user,
+            score=final_score,
+            total=total,
+            correct=score
+    )
+        return render(request, 'quiz/result.html', context)           
     return redirect('home')
 
 # 個人錯題本複習檢視
 def review_wrong_questions(request):
     if not request.user.is_authenticated:
-        # 如果沒登入，就送回首頁並附帶提示訊息
-        return render(request, 'quiz/home.html', {'message': '🔒 請先至後端登入帳號，才能啟用個人化弱點複習功能喔！'})
-    
-    # 撈出目前登入學生的所有錯題紀錄
-    wrong_list = WrongQuestion.objects.filter(user=request.user).select_related('question')
+        return render(request, 'quiz/home.html', {
+            'message': '請先登入才能使用錯題複習'
+        })
+
+    from django.utils import timezone
+
+    wrong_list = WrongQuestion.objects.filter(
+        user=request.user,
+        next_review__lte=timezone.now()   # ⭐ 只顯示「該複習的」
+    ).select_related('question').order_by('memory_level', '-wrong_count')
+
     chosen_questions = [wq.question for wq in wrong_list]
-    
-    # 💡 1. 複習時，也幫錯題的選項隨機打亂！
+
+    # ⭐ 間隔學習：隨機抽題（避免死背）
+    random.shuffle(chosen_questions)
+
+    # ⭐ 你已經有這行，保留
     prepare_shuffled_options(chosen_questions)
-    
-    # 💡 2. 把錯題的 ID 也存進 Session，這樣複習完交卷才不會拿到 0 分
+
     request.session['quiz_question_ids'] = [q.id for q in chosen_questions]
-    
-    return render(request, 'quiz/quiz.html', {'quiz_data': chosen_questions, 'is_review': True})
+
+    return render(request, 'quiz/quiz.html', {
+        'quiz_data': chosen_questions,
+        'is_review': True,
+        'question_count': len(chosen_questions)
+    })
 
 from django.shortcuts import render, redirect
 from django.contrib.auth.forms import UserCreationForm # Django 內建的註冊表單
@@ -210,3 +311,20 @@ def logout_view(request):
         return redirect(settings.LOGOUT_REDIRECT_URL) 
         
     return redirect('/')
+
+def history_view(request):
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    records = QuizRecord.objects.filter(
+        user=request.user
+    ).order_by('-created_at')
+
+    labels = [r.created_at.strftime("%m/%d") for r in records]
+    scores = [r.score for r in records]
+    
+    return render(request, 'quiz/history.html', {
+        "records": records,
+        "labels": labels,
+        "scores": scores
+    })
