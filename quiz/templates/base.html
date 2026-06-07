@@ -1,0 +1,113 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="zh-Hant" data-theme="light">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}AI 測驗學習系統{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
+</head>
+
+<body>
+
+    <!-- 背景光暈 -->
+    <div class="bg-blur blur-1"></div>
+    <div class="bg-blur blur-2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+
+        <div class="logo">
+            📚 AI 測驗學習系統
+        </div>
+
+        <div class="nav-links">
+
+            <a href="{% url 'home' %}">首頁</a>
+
+            {% if request.user.is_authenticated %}
+            <a href="{% url 'wrong_questions' %}">
+                錯題本
+            </a>
+
+            <a href="{% url 'review_wrong_questions' %}">
+                錯題複習
+            </a>
+
+            <a href="{% url 'history' %}">
+                測驗歷程
+            </a>
+            {% endif %}
+
+            <!-- 深淺色切換 -->
+            <button id="theme-toggle" class="theme-btn">
+                🌙
+            </button>
+
+            {% if request.user.is_authenticated %}
+            <span class="user-name">
+                👤 {{ request.user.username }}
+            </span>
+
+            <form action="{% url 'logout' %}" method="POST">
+                {% csrf_token %}
+                <button class="logout-btn">
+                    登出
+                </button>
+            </form>
+
+            {% else %}
+            <a href="{% url 'login' %}" class="login-btn">
+                登入
+            </a>
+            <a href="{% url 'register' %}">
+                註冊
+            </a>
+            {% endif %}
+        </div>
+
+    </nav>
+
+    <!-- Main Content -->
+    <main class="page-content">
+        {% block content %}
+        {% endblock %}
+    </main>
+
+    <script>
+        const toggle = document.getElementById("theme-toggle");
+
+        toggle.addEventListener("click", () => {
+
+            const html = document.documentElement;
+
+            if (html.dataset.theme === "light") {
+                html.dataset.theme = "dark";
+                localStorage.setItem("theme", "dark");
+                toggle.innerHTML = "☀️";
+            } else {
+                html.dataset.theme = "light";
+                localStorage.setItem("theme", "light");
+                toggle.innerHTML = "🌙";
+            }
+        });
+
+        window.onload = () => {
+            const savedTheme = localStorage.getItem("theme");
+
+            if (savedTheme) {
+                document.documentElement.dataset.theme = savedTheme;
+
+                toggle.innerHTML =
+                    savedTheme === "dark"
+                        ? "☀️"
+                        : "🌙";
+            }
+        }
+    </script>
+
+</body>
+
+</html>
