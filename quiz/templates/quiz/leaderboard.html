@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+{% block content %}
+
+<div class="card">
+
+    <h2>🏆 班級排行榜</h2>
+
+    <table class="leaderboard-table">
+
+        <thead>
+            <tr>
+                <th>排名</th>
+                <th>學生</th>
+                <th>平均分數</th>
+                <th>測驗次數</th>
+            </tr>
+        </thead>
+
+        <tbody>
+            {% for user in leaderboard %}
+            <tr>
+
+                <td>
+                    {% if forloop.counter == 1 %}
+                    🥇
+                    {% elif forloop.counter == 2 %}
+                    🥈
+                    {% elif forloop.counter == 3 %}
+                    🥉
+                    {% else %}
+                    {{ forloop.counter }}
+                    {% endif %}
+                </td>
+
+                <td>{{ user.username }}</td>
+
+                <td>
+                    {{ user.avg_score|floatformat:1 }}
+                </td>
+
+                <td>
+                    {{ user.total_quizzes }}
+                </td>
+
+            </tr>
+            {% endfor %}
+        </tbody>
+
+    </table>
+
+</div>
+
+{% endblock %}
