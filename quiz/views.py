@@ -3,6 +3,8 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from .models import Question, WrongQuestion
 from .models import QuizRecord
+from django.db.models import Avg, Count
+from django.contrib.auth.models import User
 import random
 import django.contrib.auth as auth  # 🎯【核心修正】改用這個，絕對 100% 抓得到登出工具！
 
@@ -328,3 +330,17 @@ def history_view(request):
         "labels": labels,
         "scores": scores
     })
+
+def leaderboard_view(request):
+
+    leaderboard = User.objects.annotate(
+        avg_score=Avg('quizrecord__score'),
+        total_quizzes=Count('quizrecord')
+    ).filter(
+        total_quizzes__gt=0
+    ).order_by(
+        '-avg_score',
+        '-total_quizzes'
+    )[:10]
+
+    return render(request,'quiz/leaderboard.html', {'leaderboard': leaderboard})
