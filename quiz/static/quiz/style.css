@@ -332,6 +332,30 @@ select:focus {
 }
 
 /* =======================
+   LEADERBOARD
+======================= */
+
+.leaderboard-table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+.leaderboard-table th,
+.leaderboard-table td {
+    padding: 18px;
+    text-align: center;
+    border-bottom: 1px solid var(--border);
+}
+
+.leaderboard-table tr:hover {
+    background: #f8fafc;
+}
+
+[data-theme="dark"] .leaderboard-table tr:hover {
+    background: #1e293b;
+}
+
+/* =======================
    Responsive
 ======================= */
 
