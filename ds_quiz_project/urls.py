@@ -16,7 +16,9 @@ urlpatterns = [
     
     # 2. 全新加入的登入、登出、註冊與錯題本路由
     path('login/', auth_views.LoginView.as_view(template_name='quiz/login.html'), name='login'),
-   path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
+    path('logout/', auth_views.LogoutView.as_view(next_page='/'), name='logout'),
     path('register/', views.register_view, name='register'),
     path('wrong-questions/', views.wrong_questions_view, name='wrong_questions'),
+    path('review-wrong/', views.review_wrong_questions, name='review_wrong_questions'),
+    path('history/', views.history_view, name='history'),
 ]
