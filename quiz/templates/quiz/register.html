@@ -1,43 +1,17 @@
+{% extends "base.html" %}
 {% load static %}
-<!DOCTYPE html>
-<html lang="zh-Hant">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>學生帳號註冊</title>
-    <link rel="stylesheet" href="{% static 'quiz/style.css' %}">
-</head>
-<body>
+
+{% block content %}
 
     <div class="container quiz-card">
         
-        <h2 style="text-align: center; color: #333; margin-bottom: 25px;">🎓 學生帳號註冊</h2>
+        <h2>🎓 學生帳號註冊</h2>
         
        <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
             {% csrf_token %}
             
           <style>
-                .quiz-card p {
-                    display: flex;
-                    flex-direction: column;
-                    align-items: flex-start;
-                    gap: 5px;
-                    width: 100%;
-                    font-size: 16px;
-                    color: #333;
-                    font-weight: bold;
-                    margin-bottom: 15px;
-                }
-                .quiz-card input {
-                    width: 95%;
-                    padding: 10px;
-                    border: 1px solid #ccc;
-                    border-radius: 6px;
-                    font-size: 16px;
-                    font-weight: normal;
-                    margin-top: 5px;
-                }
-                
+                               
                 /* 🎯 只隱藏說明的 helptext */
                 .quiz-card .helptext {
                     display: none !important;
@@ -64,34 +38,19 @@
 
             {{ form.as_p }}
             
-            <button type="submit" style="
-                width: 100%;
-                padding: 12px;
-                background-color: #4abc96;
-                color: white;
-                border: none;
-                border-radius: 6px;
-                font-size: 16px;
-                font-weight: bold;
-                cursor: pointer;
-                box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-                margin-top: 10px;
-            ">
-                立即註冊帳號
-            </button>
+            <button class="btn primary" type="submit">註冊帳號</button>
         </form>
 
         <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
 
         <div style="text-align: center;">
-            <span style="color: #666; font-size: 15px;">已經有帳號了？</span>
+            <span>已經有帳號了？</span>
            <a href="/login/" style="color: #4abc96; text-decoration: none; font-weight: bold; font-size: 15px; margin-left: 5px;">
-    點我前往登入
-</a>
+             點我前往登入
+           </a>
             </a>
         </div>
 
     </div>
 
-</body>
-</html>
+{% endblock %}
