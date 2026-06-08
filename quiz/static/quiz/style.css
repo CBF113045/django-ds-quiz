@@ -164,15 +164,52 @@ body {
     background: var(--primary-hover);
 }
 
+/* =======================
+   Theme Toggle Button
+======================= */
+
 .theme-btn {
-    border: none;
-    width: 42px;
-    height: 42px;
+    width: 46px;
+    height: 46px;
+
     border-radius: 50%;
+    border: 1.5px solid var(--border);
+
+    background: var(--card);
+    color: var(--text);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
     cursor: pointer;
     font-size: 18px;
-    background: var(--card);
-    box-shadow: var(--shadow);
+
+    box-shadow:
+        0 4px 12px rgba(0, 0, 0, 0.08);
+
+    transition: 0.25s ease;
+}
+
+/* hover */
+.theme-btn:hover {
+    transform: translateY(-2px);
+
+    border-color: var(--primary);
+
+    box-shadow:
+        0 8px 18px rgba(74, 188, 150, .18);
+}
+
+/* 點下去 */
+.theme-btn:active {
+    transform: scale(0.96);
+}
+
+/* 深色模式 */
+[data-theme="dark"] .theme-btn {
+    background: #263449;
+    border-color: #334155;
 }
 
 /* =======================
