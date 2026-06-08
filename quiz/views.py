@@ -5,12 +5,37 @@ from .models import Question, WrongQuestion
 from .models import QuizRecord
 from django.db.models import Avg, Count
 from django.contrib.auth.models import User
+from datetime import date, timedelta
+from .models import DailyCheckIn
 import random
 import django.contrib.auth as auth  # 🎯【核心修正】改用這個，絕對 100% 抓得到登出工具！
 
 # 首頁
 def home(request):
-    return render(request, 'quiz/home.html')
+
+    checkin_data = None
+    already_checked = False
+
+    if request.user.is_authenticated:
+
+        checkin_data = DailyCheckIn.objects.filter(
+            user=request.user
+        ).first()
+
+        if (
+            checkin_data and
+            checkin_data.last_checkin == date.today()
+        ):
+            already_checked = True
+
+    return render(
+        request,
+        'quiz/home.html',
+        {
+            'checkin_data': checkin_data,
+            'already_checked': already_checked
+        }
+    )
 
 # 💡 核心小工具：抽取題目後，幫每題的選項隨機打亂
 def prepare_shuffled_options(chosen_questions):
@@ -344,3 +369,45 @@ def leaderboard_view(request):
     )[:10]
 
     return render(request,'quiz/leaderboard.html', {'leaderboard': leaderboard})
+
+def daily_checkin(request):
+
+    if not request.user.is_authenticated:
+        return redirect('login')
+
+    today = date.today()
+
+    checkin, created = DailyCheckIn.objects.get_or_create(
+        user=request.user
+    )
+
+    # ======================
+    # 已簽到
+    # ======================
+    if checkin.last_checkin == today:
+        return redirect('home')
+
+    # ======================
+    # 昨天有簽 → streak +1
+    # ======================
+    elif (
+        checkin.last_checkin and
+        checkin.last_checkin == today - timedelta(days=1)
+    ):
+        checkin.streak_days += 1
+
+    # ======================
+    # 中斷 → 重置
+    # ======================
+    else:
+        checkin.streak_days = 1
+
+    # 更新日期
+    checkin.last_checkin = today
+
+    # 積分
+    checkin.total_points += 10
+
+    checkin.save()
+
+    return redirect('home')
