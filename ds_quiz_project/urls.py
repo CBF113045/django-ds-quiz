@@ -22,4 +22,5 @@ urlpatterns = [
     path('review-wrong/', views.review_wrong_questions, name='review_wrong_questions'),
     path('history/', views.history_view, name='history'),
     path('leaderboard/', views.leaderboard_view, name='leaderboard'),
+    path('daily-checkin/', views.daily_checkin, name='daily_checkin'),
 ]
