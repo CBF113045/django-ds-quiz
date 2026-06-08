@@ -1,6 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
+
 # 1. 題目資料庫
 class Question(models.Model):
     content = models.TextField(verbose_name="題目內容")
@@ -57,3 +58,21 @@ class QuizRecord(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.score}"
+    
+class DailyCheckIn(models.Model):
+    user = models.OneToOneField(
+        User,
+        on_delete=models.CASCADE
+    )
+
+    streak_days = models.IntegerField(default=0)
+
+    last_checkin = models.DateField(
+        null=True,
+        blank=True
+    )
+
+    total_points = models.IntegerField(default=0)
+
+    def __str__(self):
+        return self.user.username
