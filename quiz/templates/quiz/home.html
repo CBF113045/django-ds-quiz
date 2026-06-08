@@ -16,6 +16,43 @@
         {% if request.user.is_authenticated %}
         <p>👋 您好，<strong>{{ request.user.username }}</strong></p>
 
+        <div class="card">
+        
+            <h2>🔥 每日學習簽到</h2>
+        
+            <p>
+                已連續學習：
+                <strong>
+                    {{ checkin_data.streak_days|default:0 }}
+                </strong>
+                天
+            </p>
+        
+            <p>
+                學習積分：
+                <strong>
+                    {{ checkin_data.total_points|default:0 }}
+                </strong>
+            </p>
+        
+            {% if already_checked %}
+        
+            <button class="btn" disabled style="
+                        background:#94a3b8;
+                        cursor:not-allowed;">
+                ✅ 今日已簽到
+            </button>
+        
+            {% else %}
+        
+            <a class="btn primary" href="{% url 'daily_checkin' %}">
+                📅 今日簽到
+            </a>
+        
+            {% endif %}
+        
+        </div>
+        
         <div style="display:flex; gap:20px; flex-wrap:wrap;">
 
             <a class="btn" href="{% url 'wrong_questions' %}">
