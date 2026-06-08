@@ -3,11 +3,11 @@
 
 {% block content %}
 
-<div class="card">
+<div class="card auth-card">
 
     <h2>🔑 學生登入</h2>
 
-    <form method="POST">
+    <form method="POST" class="auth-form">
         {% csrf_token %}
 
         <label>使用者名稱</label>
@@ -16,26 +16,16 @@
         <label>密碼</label>
         <input type="password" name="password">
 
-        <br>
-
         <button class="btn primary" type="submit">登入</button>
     </form>
 
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
-
-        <div style="text-align: center;">
-            <span>還沒有帳號嗎？</span>
-            <a href="{% url 'register' %}" style="
-                color: #4abc96;
-                text-decoration: none;
-                font-weight: bold;
-                font-size: 15px;
-                margin-left: 5px;
-            ">
-                點我註冊帳號
-            </a>
-        </div>
-
+    <div class="auth-footer">
+        <span>還沒有帳號？</span>
+        <a href="{% url 'register' %}" class="auth-link">
+            點我註冊帳號
+        </a>
     </div>
+
+</div>
 
 {% endblock %}
