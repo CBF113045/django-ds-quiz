@@ -3,54 +3,27 @@
 
 {% block content %}
 
-    <div class="container quiz-card">
-        
-        <h2>🎓 學生帳號註冊</h2>
-        
-       <form method="POST" style="display: flex; flex-direction: column; gap: 15px;">
-            {% csrf_token %}
-            
-          <style>
-                               
-                /* 🎯 只隱藏說明的 helptext */
-                .quiz-card .helptext {
-                    display: none !important;
-                }
-                
-                /* 🎯【注意】不要直接隱藏整個 ul，而是「只隱藏屬於 helptext 的 ul」 */
-                .quiz-card p + ul {
-                    display: none !important;
-                }
-                
-                /* 🎯 確保錯誤訊息大大的顯示成紅色，讓妳看清楚為什麼不成功 */
-                .errorlist {
-                    color: red !important;
-                    background-color: #ffe6e6;
-                    padding: 10px 20px;
-                    border-radius: 4px;
-                    list-style-type: none;
-                    margin-bottom: 15px;
-                    width: 90%;
-                    font-weight: normal;
-                    font-size: 14px;
-                }
-            </style>
+<div class="card auth-card">
 
-            {{ form.as_p }}
-            
-            <button class="btn primary" type="submit">註冊帳號</button>
-        </form>
+    <h2>🎓 學生帳號註冊</h2>
 
-        <hr style="border: 0; border-top: 1px solid #eee; margin: 25px 0;">
+    <form method="POST" class="auth-form">
+        {% csrf_token %}
 
-        <div style="text-align: center;">
-            <span>已經有帳號了？</span>
-           <a href="/login/" style="color: #4abc96; text-decoration: none; font-weight: bold; font-size: 15px; margin-left: 5px;">
-             點我前往登入
-           </a>
-            </a>
-        </div>
+        {{ form.as_p }}
 
+        <button class="btn primary" type="submit">
+            註冊帳號
+        </button>
+    </form>
+
+    <div class="auth-footer">
+        <span>已經有帳號了？</span>
+        <a href="{% url 'login' %}" class="auth-link">
+            點我前往登入
+        </a>
     </div>
+
+</div>
 
 {% endblock %}
