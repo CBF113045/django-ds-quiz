@@ -1,51 +1,68 @@
 {% extends "base.html" %}
 {% block content %}
 
-<div class="card">
-    <h2>🎉 測驗完成</h2>
-    <h1 style="font-size:48px; color:var(--primary)">
-        {{ correct_count }}/{{ total }}
-    </h1>
+<div class="page-section">
+    <div class="card result-summary">
+        <h2>🎉 測驗完成</h2>
 
-    <p>正確率：{{ correct_count|floatformat:0 }}/{{ total }}</p>
+        <h1 class="result-score">
+            {{ correct_count }}/{{ total }}
+        </h1>
+
+        <p>
+            正確率：
+            {% widthratio correct_count total 100 %}%
+        </p>
+    </div>
 </div>
 
 <!-- 📊 分析區 -->
-<div class="card">
-    <h3>📊 本次表現分析</h3>
+<div class="page-section">
+    <div class="card">
+        <h3>📊 本次表現分析</h3>
 
-    <div style="display:grid; grid-template-columns:1fr 1fr; gap:16px;">
+        <div class="dashboard-grid">
 
-        <div class="card">
-            <h4>正確題數</h4>
-            <p style="font-size:28px; color:var(--primary)">
-                {{ correct_count }}
-            </p>
+            <div class="card mini-card">
+                <h4>正確題數</h4>
+                <p class="success-number">
+                    {{ correct_count }}
+                </p>
+            </div>
+
+            <div class="card mini-card">
+                <h4>錯誤題數</h4>
+                <p class="danger-number">
+                    {{ wrong_count }}
+                </p>
+            </div>
+
         </div>
-
-        <div class="card">
-            <h4>錯誤題數</h4>
-            <p style="font-size:28px; color:var(--danger)">
-                {{ total|add:"-"|add:correct_count }}
-            </p>
-        </div>
-
     </div>
 </div>
 
 <!-- ❌ 錯題 -->
-<div class="card">
-    <h3>❌ 錯題分析</h3>
+<div class="page-section">
+    <div class="card">
+        <h3>❌ 錯題分析</h3>
 
-    {% for r in wrong_details %}
-    <div class="card" style="border-left:4px solid var(--danger)">
-        <p><b>題目：</b>{{ r.question.content }}</p>
-        <p style="color:var(--danger)">你的答案：{{ r.user_ans }}</p>
-        <p style="color:var(--primary)">正確答案：{{ r.correct_ans }}</p>
+        {% for r in wrong_details %}
+        <div class="card wrong-review-card">
+            <p><b>題目：</b>{{ r.question.content }}</p>
+
+            <p class="text-danger">
+                你的答案：{{ r.user_ans }}
+            </p>
+
+            <p class="text-success">
+                正確答案：{{ r.correct_ans }}
+            </p>
+        </div>
+
+        {% empty %}
+        <p>🎉 沒有錯題！太強了</p>
+        {% endfor %}
     </div>
-    {% empty %}
-    <p>🎉 沒有錯題！太強了</p>
-    {% endfor %}
 </div>
 
 <!-- 🔁 行動 -->
