@@ -4,14 +4,16 @@
 
 {% block content %}
 
-<div class="card">
-    <h1>🧠 AI 錯題學習儀表板</h1>
-    <p>系統會根據你的記憶狀態，自動安排複習</p>
+<div class="page-section">
+    <div class="card">
+        <h1>🧠 AI 錯題學習儀表板</h1>
+        <p>系統會根據你的記憶狀態，自動安排複習</p>
+    </div>
 </div>
 
 {% if user_wrong %}
 
-<div class="grid">
+<div class="dashboard-list">
 
     {% for item in user_wrong %}
 
