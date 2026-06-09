@@ -313,6 +313,32 @@ body {
 }
 
 /* =======================
+   PAGE SYSTEM EXTENDED
+======================= */
+
+/* 大區塊（home 同級） */
+.page-section {
+    margin-bottom: 28px;
+}
+
+/* wrong_questions / history 卡片距離 */
+.compact-card {
+    margin-bottom: 14px !important;
+}
+
+/* list container */
+.dashboard-list {
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+}
+
+/* 避免 compact card 疊加 margin */
+.dashboard-list .card {
+    margin-bottom: 0;
+}
+
+/* =======================
    Page Layout
 ======================= */
 
