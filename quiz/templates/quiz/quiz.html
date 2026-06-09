@@ -8,41 +8,36 @@
 </div>
 
 <form action="{% url 'submit_quiz' %}" method="POST">
-    {% csrf_token %} 
-    
+    {% csrf_token %}
+
     {% for q in quiz_data %}
-    <div class="card">
-        
+    <div class="card quiz-card">
+
         <h2>第 {{ forloop.counter }} 題</h2>
-        
+
         <p class="question">
             {{ q.content }}
         </p>
 
         {% for key, value in q.shuffled_options %}
         <label class="option-card">
-            <input type="radio"
-                   name="question_{{ q.id }}"
-                   value="{{ value }}"
-                   required>
+            <input type="radio" name="question_{{ q.id }}" value="{{ value }}" required>
 
             <span>{{ key }}. {{ value }}</span>
         </label>
         {% endfor %}
 
     </div>
-    {% empty %}
-        <div class="quiz-card">
-            <h2>目前題庫空空的喔！請先去後台 /admin 新增題目。</h2>
-        </div>
     {% endfor %}
 
     {% if quiz_data %}
-    <div style="text-align: center; ">
-        <button class="btn primary" type="submit">送出答案</button>
+    <div class="page-action">
+        <button class="btn primary" type="submit">
+            送出答案
+        </button>
     </div>
     {% endif %}
-    
+
 </form>
 
 <script>
