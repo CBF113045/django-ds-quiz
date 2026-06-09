@@ -1,45 +1,60 @@
 {% extends "base.html" %}
+
 {% block content %}
 
-<div class="card">
-    <h2>📈 學習歷程分析</h2>
-
-    <canvas id="scoreChart"></canvas>
-</div>
-
-<div class="card">
-    <h3>📜 詳細紀錄</h3>
-
-    {% for r in records %}
+<div class="page-section">
     <div class="card">
-        <p>分數：{{ r.score }}%</p>
-        <p>答對：{{ r.correct }}/{{ r.total }}</p>
-        <p>時間：{{ r.created_at }}</p>
+        <h2>📈 學習歷程分析</h2>
+
+        <canvas id="scoreChart"></canvas>
     </div>
-    {% empty %}
-    <p>尚無紀錄</p>
-    {% endfor %}
 </div>
 
-<!-- Chart.js -->
+<div class="page-section">
+    <div class="card">
+        <h3>📜 詳細紀錄</h3>
+
+        {% for r in records %}
+        <div class="card compact-card">
+
+            <p>分數：{{ r.score }}%</p>
+
+            <p>
+                答對：
+                {{ r.correct }}/{{ r.total }}
+            </p>
+
+            <p>
+                時間：
+                {{ r.created_at }}
+            </p>
+
+        </div>
+
+        {% empty %}
+        <p>尚無紀錄</p>
+        {% endfor %}
+    </div>
+</div>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <script>
-    const ctx = document.getElementById('scoreChart');
+const ctx = document.getElementById('scoreChart');
 
-    new Chart(ctx, {
-        type: 'line',
-        data: {
-            labels: {{ labels| safe }},
+new Chart(ctx, {
+    type: 'line',
+    data: {
+        labels: {{ labels|safe }},
         datasets: [{
             label: '測驗分數',
-            data: {{ scores| safe }},
-        borderColor: '#4abc96',
-        tension: 0.3,
-        fill: true
+            data: {{ scores|safe }},
+            borderColor: '#4abc96',
+            tension: 0.3,
+            fill: true
         }]
     },
-        options: {
+    options: {
         responsive: true,
         plugins: {
             legend: {
