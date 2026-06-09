@@ -181,7 +181,7 @@ def submit_quiz(request):
                     if request.user.is_authenticated:
                         try:
                             wrong_obj = WrongQuestion.objects.get(
-                                user=request.user,
+                            user=request.user,
                                 question=question
                             )
 
@@ -189,11 +189,28 @@ def submit_quiz(request):
 
                             # 提升熟練度
                             if wrong_obj.correct_count >= 2:
+
                                 wrong_obj.memory_level = min(
                                     wrong_obj.memory_level + 1,
                                     3
                                 )
+
                                 wrong_obj.correct_count = 0
+
+                            # ⭐ 更新下次複習時間
+                            if wrong_obj.memory_level == 0:
+                                delay_days = 0
+                            elif wrong_obj.memory_level == 1:
+                                delay_days = 1
+                            elif wrong_obj.memory_level == 2:
+                                delay_days = 3
+                            else:
+                                delay_days = 7
+
+                            wrong_obj.next_review = (
+                                timezone.now() +
+                                timedelta(days=delay_days)
+                            )
 
                             wrong_obj.save()
 
@@ -201,57 +218,52 @@ def submit_quiz(request):
                             pass
                 
                 else:
-                    # 答錯了！存入或更新錯題本資料庫
-                    from django.utils import timezone
-                    from datetime import timedelta
 
-                    wrong_obj, created = WrongQuestion.objects.get_or_create(
-                        user=request.user,
-                        question=question,
-                        defaults={
-                            'user_answer': final_user_display,
-                        }
-                    )
+                    # ⭐ 訪客不記錄錯題
+                    if request.user.is_authenticated:
+                        
+                        wrong_obj, created = WrongQuestion.objects.get_or_create(
+                            user=request.user,
+                            question=question,
+                            defaults={
+                                'user_answer': final_user_display,
+                            }
+                        )
 
-                    # 🧠 如果第一次錯
-                    if created:
-                        wrong_obj.wrong_count = 1
+                        # 🧠 如果第一次錯
+                        if created:
+                            wrong_obj.wrong_count = 1
+                            wrong_obj.memory_level = 0
+
+                        else:
+                            wrong_obj.wrong_count += 1
+
+                        # 答錯重置記憶
                         wrong_obj.memory_level = 0
 
-                    else:
-                        wrong_obj.wrong_count += 1
+                        # 間隔學習
+                        if wrong_obj.memory_level == 0:
+                            delay_days = 0
+                        elif wrong_obj.memory_level == 1:
+                            delay_days = 1
+                        elif wrong_obj.memory_level == 2:
+                            delay_days = 3
+                        else:
+                            delay_days = 7
 
-                    # 🎯 記憶演算法（核心）
-                    if user_ans_text == actual_correct_text:
-                        wrong_obj.correct_count += 1
+                        wrong_obj.next_review = (
+                            timezone.now() +
+                            timedelta(days=delay_days)
+                        )
 
-                        # 答對 → 提升記憶等級
-                        if wrong_obj.correct_count >= 3:
-                            wrong_obj.memory_level = min(wrong_obj.memory_level + 1, 3)
+                        wrong_obj.user_answer = final_user_display
+                        wrong_obj.save()
 
-                    else:
-                        wrong_obj.memory_level = 0  # 答錯重置
-
-                    # ⏳ 間隔學習核心（重點加分）
-                    if wrong_obj.memory_level == 0:
-                        delay_days = 0
-                    elif wrong_obj.memory_level == 1:
-                        delay_days = 1
-                    elif wrong_obj.memory_level == 2:
-                        delay_days = 3
-                    else:
-                        delay_days = 7
-
-                    wrong_obj.next_review = timezone.now() + timedelta(days=delay_days)
-
-                    wrong_obj.user_answer = final_user_display
-                    wrong_obj.save()
-                    
-                    # 給當下成績單 result.html 用的資料
+                    # ⭐ 不管有沒有登入都顯示錯題分析
                     wrong_details.append({
                         'question': question,
-                        'user_ans': final_user_display,       # 帶有括號的漂亮格式
-                        'correct_ans': final_correct_display,   # 帶有括號的漂亮格式
+                        'user_ans': final_user_display,
+                        'correct_ans': final_correct_display,
                     })
                     
             except Question.DoesNotExist:
@@ -263,6 +275,7 @@ def submit_quiz(request):
             'score': final_score,
             'total': total,
             'correct_count': score,
+            'wrong_count': total - score,
             'wrong_details': wrong_details
         }
         from .models import QuizRecord
@@ -272,7 +285,7 @@ def submit_quiz(request):
             score=final_score,
             total=total,
             correct=score
-    )
+        )
         return render(request, 'quiz/result.html', context)           
     return redirect('home')
 
@@ -291,6 +304,14 @@ def review_wrong_questions(request):
     ).select_related('question').order_by('memory_level', '-wrong_count')
 
     chosen_questions = [wq.question for wq in wrong_list]
+    if not chosen_questions:
+        return render(
+        request,
+            'quiz/home.html',
+            {
+                'message': '🎉 今天沒有需要複習的錯題！'
+            }
+        )
 
     # ⭐ 間隔學習：隨機抽題（避免死背）
     random.shuffle(chosen_questions)
@@ -359,10 +380,10 @@ def history_view(request):
 def leaderboard_view(request):
 
     leaderboard = User.objects.annotate(
-        avg_score=Avg('quizrecord__score'),
-        total_quizzes=Count('quizrecord')
+    avg_score=Avg('quizrecord__score'),
+    total_quizzes=Count('quizrecord')
     ).filter(
-        total_quizzes__gt=0
+        total_quizzes__gte=3
     ).order_by(
         '-avg_score',
         '-total_quizzes'
