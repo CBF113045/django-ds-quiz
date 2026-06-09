@@ -1,6 +1,6 @@
 {% load static %}
 <!DOCTYPE html>
-<html lang="zh-Hant" data-theme="light">
+<html lang="zh-Hant">
 
 <head>
     <meta charset="UTF-8">
@@ -37,7 +37,7 @@
             </a>
 
             <a href="{% url 'history' %}">
-                測驗歷程
+                📈 測驗歷程
             </a>
             
             <a href="{% url 'leaderboard' %}">
@@ -82,37 +82,46 @@
     </main>
 
     <script>
-        const toggle = document.getElementById("theme-toggle");
+        document.addEventListener("DOMContentLoaded", () => {
 
-        toggle.addEventListener("click", () => {
+            const toggle =
+                document.getElementById("theme-toggle");
 
-            const html = document.documentElement;
+            const html =
+                document.documentElement;
 
-            if (html.dataset.theme === "light") {
-                html.dataset.theme = "dark";
-                localStorage.setItem("theme", "dark");
-                toggle.innerHTML = "☀️";
-            } else {
-                html.dataset.theme = "light";
-                localStorage.setItem("theme", "light");
-                toggle.innerHTML = "🌙";
-            }
-        });
+            // 讀取上次主題
+            const savedTheme =
+                localStorage.getItem("theme") || "light";
 
-        window.onload = () => {
-            const savedTheme = localStorage.getItem("theme");
+            html.dataset.theme = savedTheme;
 
-            if (savedTheme) {
-                document.documentElement.dataset.theme = savedTheme;
+            // 初始化 icon
+            toggle.innerHTML =
+                savedTheme === "dark"
+                    ? "☀️"
+                    : "🌙";
+
+            // 點擊切換
+            toggle.addEventListener("click", () => {
+
+                const isLight =
+                    html.dataset.theme === "light";
+
+                html.dataset.theme =
+                    isLight ? "dark" : "light";
+
+                localStorage.setItem(
+                    "theme",
+                    html.dataset.theme
+                );
 
                 toggle.innerHTML =
-                    savedTheme === "dark"
-                        ? "☀️"
-                        : "🌙";
-            }
-        }
-    </script>
+                    isLight ? "☀️" : "🌙";
+            });
 
+        });
+    </script>
 </body>
 
 </html>
