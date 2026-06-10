@@ -129,6 +129,8 @@ body {
     display: flex;
     gap: var(--s-3);
     align-items: center;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .nav-links a {
@@ -657,7 +659,7 @@ select:focus {
 
 .fixed-timer {
     position: fixed;
-    top: 90px;
+    top: 110px;
     right: 20px;
 
     background: var(--card);
