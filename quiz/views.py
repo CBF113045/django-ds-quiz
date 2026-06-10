@@ -364,13 +364,24 @@ def history_view(request):
     if not request.user.is_authenticated:
         return redirect('login')
 
+    # 詳細紀錄（最新在上）
     records = QuizRecord.objects.filter(
         user=request.user
     ).order_by('-created_at')
 
-    labels = [r.created_at.strftime("%m/%d") for r in records]
-    scores = [r.score for r in records]
-    
+    # 圖表資料（最舊→最新）
+    chart_records = records[::-1]
+
+    labels = [
+        r.created_at.strftime("%m/%d")
+        for r in chart_records
+    ]
+
+    scores = [
+        r.score
+        for r in chart_records
+    ]
+
     return render(request, 'quiz/history.html', {
         "records": records,
         "labels": labels,
