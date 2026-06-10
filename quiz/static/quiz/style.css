@@ -166,6 +166,18 @@ body {
     background: var(--primary-hover);
 }
 
+.hamburger {
+    display: none;
+
+    border: none;
+    background: transparent;
+
+    font-size: 28px;
+    cursor: pointer;
+
+    color: var(--text);
+}
+
 /* =======================
    Theme Toggle Button
 ======================= */
@@ -402,10 +414,6 @@ body {
 }
 
 .card:hover {
-    transform: translateY(-2px);
-}
-
-.card:hover {
     transform: translateY(-3px);
 }
 
@@ -453,17 +461,6 @@ body {
     margin: 0 auto;
     padding: 0 16px;
     box-sizing: border-box;
-}
-
-@media (max-width: 768px) {
-    .navbar {
-        flex-direction: column;
-        gap: 12px;
-    }
-
-    .page-title {
-        font-size: 26px;
-    }
 }
 
 /* =======================
@@ -659,7 +656,7 @@ select:focus {
 
 .fixed-timer {
     position: fixed;
-    top: 110px;
+    top: 90px;
     right: 20px;
 
     background: var(--card);
@@ -728,19 +725,83 @@ select:focus {
    Responsive
 ======================= */
 
-@media(max-width:768px) {
+/* =======================
+   Mobile
+======================= */
+
+/* 手機版 */
+@media (max-width: 768px) {
 
     .navbar {
-        flex-direction: column;
-        gap: 20px;
+        padding: 16px 20px;
+        flex-wrap: wrap;
     }
 
-    .hero-title {
-        font-size: 32px;
+    /* logo 與漢堡同一排 */
+    .logo {
+        font-size: 20px;
+    }
+
+    .hamburger {
+        display: block;
+    }
+
+    /* 預設收起 */
+    .nav-links {
+        display: none;
+
+        width: 100%;
+        margin-top: 16px;
+
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+
+        background: var(--card);
+
+        border: 1px solid var(--border);
+        border-radius: 20px;
+
+        padding: 14px;
+
+        box-shadow: var(--shadow-md);
+    }
+
+    /* 點開 */
+    .nav-links.active {
+        display: flex;
+    }
+
+    .nav-links a,
+    .logout-btn,
+    .login-btn,
+    .theme-btn {
+        width: 100%;
+        box-sizing: border-box;
+        justify-content: center;
+    }
+
+    .user-name {
+        text-align: center;
+    }
+
+    .page-content {
+        padding: 16px;
     }
 
     .quiz-card {
-        padding: 24px;
+        padding: 22px;
+    }
+
+    .dashboard-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .fixed-timer {
+        top: auto;
+        bottom: 20px;
+        right: 20px;
+        z-index: 999;
     }
 }
 
