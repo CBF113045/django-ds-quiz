@@ -92,23 +92,17 @@ AUTH_PASSWORD_VALIDATORS = []
 
 LANGUAGE_CODE = 'zh-hant'
 
-TIME_ZONE = 'UTC'
+TIME_ZONE = 'Asia/Taipei'
 
 USE_I18N = True
 
-USE_TZ = True
+USE_TZ = False
 
 
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = 'static/'
-# ==============================================================================
-# 🎯 終極登入/登出轉址設定
-# ==============================================================================
-
-# 告訴 Django：只要使用者成功登出，不需要問，直接強制重新導向到首頁（'/'）
 LOGOUT_REDIRECT_URL = '/'
 
-# （選填備用）未來如果有做登入頁面，成功登入後也直接去首頁
 LOGIN_REDIRECT_URL = '/'
