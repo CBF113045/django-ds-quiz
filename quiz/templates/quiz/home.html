@@ -59,7 +59,13 @@
     <div class="card">
         <form action="{% url 'start_quiz' %}" method="GET">
 
-            <label>選擇題數</label>
+            <h2 class="section-title">
+                🚀 開始測驗
+            </h2>
+            
+            <p>
+                請選擇題數後開始測驗
+            </p>
 
             <select name="num">
                 <option value="5">5 題</option>
@@ -68,7 +74,7 @@
             </select>
 
             <button class="btn primary" type="submit">
-                🚀 開始測驗
+                開始測驗
             </button>
 
         </form>
