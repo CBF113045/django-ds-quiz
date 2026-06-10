@@ -19,7 +19,11 @@ Markdown
 
 輸入指令: git clone https://github.com/CBF113045/django-ds-quiz.git
 
-進入專案資料夾 : cd django-ds-quiz
+
+重要前提：切換至專案根目錄
+請確保您的終端機（Terminal）路徑已切換至含有 manage.py 的核心專案資料夾內。若路徑不正確，請使用 cd 指令切換
+
+cd django-ds-quiz-main
 
 ( 提示：如果是從網頁下載 ZIP 檔，請解壓縮後直接用 VS Code 的「開啟資料夾」打開該目錄即可。)
 
@@ -28,7 +32,7 @@ Markdown
 1. 安裝必要開發套件
 在專案根目錄下執行，依據 requirements.txt 安裝 Django 及相關相依套件：
 
-pip install -r requirements.txt
+python -m pip install -r requirements.txt
 
 2. 執行資料庫遷移（Migration）
 同步 SQLite 資料庫結構，確保題庫與資料表完整：
