@@ -18,13 +18,16 @@
 
     <!-- Navbar -->
     <nav class="navbar">
-
+    
         <div class="logo">
             📚 AI 測驗學習系統
         </div>
-
-        <div class="nav-links">
-
+        
+        <button class="hamburger" id="hamburger">
+            ☰
+        </button>
+        
+        <div class="nav-links" id="nav-links">
             <a href="{% url 'home' %}">首頁</a>
 
             {% if request.user.is_authenticated %}
@@ -119,6 +122,21 @@
                 toggle.innerHTML =
                     isLight ? "☀️" : "🌙";
             });
+
+            // 漢堡選單
+            const hamburger =
+                document.getElementById("hamburger");
+
+            const navLinks =
+                document.getElementById("nav-links");
+
+            if (hamburger && navLinks) {
+
+                hamburger.addEventListener("click", () => {
+                    navLinks.classList.toggle("active");
+                });
+
+            }
 
         });
     </script>
