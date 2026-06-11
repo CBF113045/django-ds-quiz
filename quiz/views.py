@@ -3,7 +3,7 @@ from django.conf import settings
 from django.shortcuts import render, redirect
 from .models import Question, WrongQuestion
 from .models import QuizRecord
-from django.db.models import Avg, Count
+from django.db.models import Max, Count
 from django.contrib.auth.models import User
 from datetime import date, timedelta
 from .models import DailyCheckIn
@@ -391,16 +391,18 @@ def history_view(request):
 def leaderboard_view(request):
 
     leaderboard = User.objects.annotate(
-    avg_score=Avg('quizrecord__score'),
-    total_quizzes=Count('quizrecord')
+        best_score=Max('quizrecord__score'),
+        total_quizzes=Count('quizrecord')
     ).filter(
-        total_quizzes__gte=3
+        total_quizzes__gte=1
     ).order_by(
-        '-avg_score',
+        '-best_score',
         '-total_quizzes'
     )[:10]
 
-    return render(request,'quiz/leaderboard.html', {'leaderboard': leaderboard})
+    return render(request, 'quiz/leaderboard.html', {
+        'leaderboard': leaderboard
+    })
 
 def daily_checkin(request):
 
