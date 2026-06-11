@@ -34,12 +34,17 @@ cd django-ds-quiz-main
 
 python -m pip install -r requirements.txt
 
-2. 執行資料庫遷移（Migration）
+2. 建立 Migration
+
+若看到 models 有變更提示，請先執行：
+python manage.py makemigrations
+
+3. 執行資料庫遷移（Migration）
 同步 SQLite 資料庫結構，確保題庫與資料表完整：
 
 python manage.py migrate
 
-3. 啟動 Django 開發伺服器
+4. 啟動 Django 開發伺服器
 執行以下指令啟動在地端伺服器：
 
 python manage.py runserver
