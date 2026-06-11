@@ -35,8 +35,8 @@ cd django-ds-quiz-main
 python -m pip install -r requirements.txt
 
 2. 建立 Migration
-
 若看到 models 有變更提示，請先執行：
+
 python manage.py makemigrations
 
 3. 執行資料庫遷移（Migration）
