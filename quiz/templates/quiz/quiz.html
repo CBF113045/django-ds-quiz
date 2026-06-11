@@ -15,9 +15,9 @@
 
         <h2>第 {{ forloop.counter }} 題</h2>
 
-        <p class="question">
-            {{ q.content }}
-        </p>
+       <p class="question">
+    {{ q.content|safe }}
+</p>
 
         {% for key, value in q.shuffled_options %}
         <label class="option-card">
