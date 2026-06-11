@@ -11,7 +11,7 @@
             <tr>
                 <th>排名</th>
                 <th>學生</th>
-                <th>平均分數</th>
+                <th>最高分數</th>
                 <th>測驗次數</th>
             </tr>
         </thead>
@@ -35,7 +35,7 @@
                 <td>{{ user.username }}</td>
 
                 <td>
-                    {{ user.avg_score|floatformat:1 }}
+                    {{ user.best_score|floatformat:1 }}
                 </td>
 
                 <td>
